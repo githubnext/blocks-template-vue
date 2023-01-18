@@ -1,6 +1,14 @@
-import { Block, FileContext, FolderContext } from "@githubnext/blocks";
+import type { App, ComponentPublicInstance } from "vue";
+import { createApp, h } from "vue";
+import {
+  Block,
+  FileBlockProps,
+  FileContext,
+  FolderBlockProps,
+  FolderContext,
+} from "@githubnext/blocks";
 import { init } from "@githubnext/blocks-runtime";
-import BlockComponent from "./BlockComponent.svelte";
+import BlockComponent from "./BlockComponent.vue";
 
 import "./index.css";
 
@@ -11,60 +19,79 @@ if (window === window.top) {
   )}`;
 }
 
-const root = document.getElementById("root");
+type BlockProps = FileBlockProps | FolderBlockProps;
 
 const loadDevServerBlock = async (block: Block) => {
   const imports = import.meta.glob("../blocks/**");
   const importPath = "../" + block.entry;
-  const importContent = imports[importPath];
-  const content = await importContent();
+  const component = await imports[importPath]();
 
-  let component;
+  let instance: ComponentPublicInstance;
 
-  return (props) => {
-    const fullProps = {
-      ...props,
-      BlockComponent: getBlockComponentWithParentContext(props.context),
-    };
-    if (component) {
-      component.$set(fullProps);
+  return (props: BlockProps) => {
+    if (!instance) {
+      // need this wrapper component to be able to update props by modifying `component.$data`;
+      // if we mount `content.default` directly, we can't update the props passed to `createApp` (???)
+      const app = createApp({
+        data() {
+          return {
+            ...props,
+            BlockComponent: getBlockComponentWithParentContext(props.context),
+          };
+        },
+        render() {
+          // @ts-ignore
+          return h(component.default, {
+            ...Object.fromEntries(
+              Object.keys(props).map((key) => [key, this[key]])
+            ),
+            BlockComponent: this.BlockComponent,
+          });
+        },
+      });
+      instance = app.mount("#root");
     } else {
-      component = new content.default({ target: root, props: fullProps });
+      for (const key in props) {
+        // @ts-ignore
+        instance.$data[key] = props[key];
+      }
+      // @ts-ignore
+      instance.$data["BlockComponent"] = getBlockComponentWithParentContext(
+        props.context
+      );
     }
   };
 };
 
 init(loadDevServerBlock);
 
+// TODO(jaked)
+// returning a new render function causes the component to remount
 const getBlockComponentWithParentContext = (
   parentContext?: FileContext | FolderContext
 ) => {
-  class BlockComponentWithParentContext extends BlockComponent {
-    constructor(options) {
-      let context = {
-        ...(parentContext || {}),
-        ...(options.parentContext || {}),
-      };
+  // @ts-ignore
+  return (props) => {
+    let context = {
+      ...(parentContext || {}),
+      ...(props.context || {}),
+    };
 
-      if (parentContext) {
-        // clear sha if viewing content from another repo
-        const parentRepo = [parentContext.owner, parentContext.repo].join("/");
-        const childRepo = [context.owner, context.repo].join("/");
-        const isSameRepo = parentRepo === childRepo;
-        if (!isSameRepo) {
-          context.sha = options.context?.sha || "HEAD";
-        }
+    if (parentContext) {
+      // clear sha if viewing content from another repo
+      const parentRepo = [parentContext.owner, parentContext.repo].join("/");
+      const childRepo = [context.owner, context.repo].join("/");
+      const isSameRepo = parentRepo === childRepo;
+      if (!isSameRepo) {
+        context.sha = props.context?.sha || "HEAD";
       }
-
-      const fullOptions = {
-        ...options,
-        props: {
-          ...options.props,
-          context,
-        },
-      };
-      super(fullOptions);
     }
-  }
-  return BlockComponentWithParentContext;
+
+    const fullProps = {
+      ...props,
+      context,
+    };
+
+    return h(BlockComponent, fullProps);
+  };
 };

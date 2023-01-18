@@ -1,7 +1,18 @@
 {
-  "extends": "./node_modules/@githubnext/blocks/tsconfig.json",
   "include": ["./blocks", "./src"],
   "compilerOptions": {
-    "types": ["vite/client", "svelte"]
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["vite/client"]
   }
 }

@@ -1,7 +1,6 @@
 const esbuild = require("esbuild");
 const ignorePlugin = require("esbuild-plugin-ignore");
-const sveltePlugin = require("esbuild-svelte");
-const sveltePreprocess = require("svelte-preprocess");
+const vuePlugin = require("esbuild-vue");
 const path = require("path");
 
 process.env.BABEL_ENV = "production";
@@ -18,14 +17,34 @@ const build = async () => {
     "use strict";
     import Component from "./${block.entry}";
 
-    const root = document.getElementById("root");
-    let component;
+    let instance;
 
     export default (props) => {
-      if (component) {
-        component.$set(props);
+      if (!instance) {
+        const app = createApp({
+          data() {
+            return {
+              ...props,
+              // BlockComponent: getBlockComponentWithParentContext(props.context),
+            };
+          },
+          render() {
+            return h(component.default, {
+              ...Object.fromEntries(
+                Object.keys(props).map((key) => [key, this[key]])
+              ),
+              // BlockComponent: this.BlockComponent,
+            });
+          },
+        });
+        instance = app.mount("#root");
       } else {
-        component = new Component({ target: root, props });
+        for (const key in props) {
+          instance.$data[key] = props[key];
+        }
+        // instance.$data["BlockComponent"] = getBlockComponentWithParentContext(
+        //   props.context
+        // );
       }
     };
     `,
@@ -37,7 +56,7 @@ const build = async () => {
       outfile: `dist/${block.id}/index.js`,
       format: "iife",
       plugins: [
-        sveltePlugin({ preprocess: sveltePreprocess({}) }),
+        vuePlugin(),
         ignorePlugin([{ resourceRegExp: /@githubnext\/blocks/ }]),
       ],
       globalName: "VanillaBlockBundle",
