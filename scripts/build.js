@@ -1,6 +1,6 @@
 const esbuild = require("esbuild");
 const ignorePlugin = require("esbuild-plugin-ignore");
-const vuePlugin = require("esbuild-vue");
+const vuePlugin = require("esbuild-plugin-vue3");
 const path = require("path");
 
 process.env.BABEL_ENV = "production";
