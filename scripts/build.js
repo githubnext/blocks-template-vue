@@ -30,7 +30,7 @@ const build = async () => {
             };
           },
           render() {
-            return h(component.default, {
+            return h(Component, {
               ...Object.fromEntries(
                 Object.keys(props).map((key) => [key, this[key]])
               ),
