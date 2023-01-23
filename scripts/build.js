@@ -26,7 +26,6 @@ const build = async () => {
           data() {
             return {
               ...props,
-              // BlockComponent: getBlockComponentWithParentContext(props.context),
             };
           },
           render() {
@@ -34,7 +33,6 @@ const build = async () => {
               ...Object.fromEntries(
                 Object.keys(props).map((key) => [key, this[key]])
               ),
-              // BlockComponent: this.BlockComponent,
             });
           },
         });
@@ -43,9 +41,6 @@ const build = async () => {
         for (const key in props) {
           instance.$data[key] = props[key];
         }
-        // instance.$data["BlockComponent"] = getBlockComponentWithParentContext(
-        //   props.context
-        // );
       }
     };
     `,

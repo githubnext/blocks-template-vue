@@ -7,25 +7,27 @@ const { context, block } = defineProps<{
   block: Block;
 }>();
 
-const hash = computed(() =>
-  encodeURIComponent(
-    JSON.stringify({
-      block: {
-        owner: block.owner,
-        repo: block.repo,
-        id: block.id,
-        type: block.type,
-      },
-      context,
-    })
-  )
+const src = computed(
+  () =>
+    "/#" +
+    encodeURIComponent(
+      JSON.stringify({
+        block: {
+          owner: block.owner,
+          repo: block.repo,
+          id: block.id,
+          type: block.type,
+        },
+        context,
+      })
+    )
 );
 </script>
 
 <template>
   <iframe
     title="embedded block"
-    :src="`/#${hash}`"
+    :src="src"
     sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
   />
 </template>
