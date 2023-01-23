@@ -61,7 +61,7 @@ const build = async () => {
         ignorePlugin([{ resourceRegExp: /@githubnext\/blocks/ }]),
       ],
       globalName: "VanillaBlockBundle",
-      minify: false,
+      minify: true,
     });
   });
 
