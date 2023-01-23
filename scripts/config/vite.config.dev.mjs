@@ -17,6 +17,9 @@ const getViteConfigDev = (port, https) => ({
     port,
     strictPort: true,
     https,
+    hmr: {
+      host: "localhost",
+    },
     fs: {
       allow: [searchForWorkspaceRoot(process.cwd())],
     },
