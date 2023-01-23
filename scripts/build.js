@@ -15,6 +15,7 @@ const build = async () => {
       resolveDir: process.cwd(),
       contents: `
     "use strict";
+    import { createApp, h } from "@vue/runtime-dom";
     import Component from "./${block.entry}";
 
     let instance;
@@ -60,7 +61,7 @@ const build = async () => {
         ignorePlugin([{ resourceRegExp: /@githubnext\/blocks/ }]),
       ],
       globalName: "VanillaBlockBundle",
-      minify: true,
+      minify: false,
     });
   });
 

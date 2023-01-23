@@ -1,5 +1,5 @@
-import type { App, ComponentPublicInstance } from "vue";
-import { createApp, h } from "vue";
+import type { ComponentPublicInstance } from "@vue/runtime-dom";
+import { createApp, h } from "@vue/runtime-dom";
 import {
   Block,
   FileBlockProps,
