@@ -1,7 +1,6 @@
 import fs from "fs";
 import { searchForWorkspaceRoot } from "vite";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
-import preprocess from "svelte-preprocess";
+import vue from "@vitejs/plugin-vue";
 import basicSsl from "@vitejs/plugin-basic-ssl";
 import parseGitConfig from "parse-git-config";
 
@@ -32,9 +31,7 @@ const getViteConfigDev = (port, https) => ({
   },
   plugins: [
     https ? basicSsl() : null,
-    svelte({
-      preprocess: preprocess({}),
-    }),
+    vue(),
     {
       name: "configure-response-headers",
       configureServer: (server) => {

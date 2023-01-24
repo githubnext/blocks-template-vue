@@ -1,4 +1,4 @@
-# GitHub Blocks Template (Svelte version)
+# GitHub Blocks Template (Vue version)
 
 Use this repository as a starter template for building your own Blocks using
 
@@ -29,7 +29,7 @@ This template includes one example File Block and one Folder Block. The dev serv
 
 ## Under the hood
 
-With this template, Blocks are [Svelte](https://svelte.dev/) components. They have a well-defined contract with their surroundings, and receive a [fixed set of props](TODO) when they are instantiated. They are developed in [TypeScript](https://www.typescriptlang.org/), and bundled with [Vite](https://vitejs.dev/).
+With this template, Blocks are [Vue](https://vuejs.org/) components. They have a well-defined contract with their surroundings, and receive a [fixed set of props](TODO) when they are instantiated. They are developed in [TypeScript](https://www.typescriptlang.org/), and bundled with [Vite](https://vitejs.dev/).
 
 ## More Info
 
